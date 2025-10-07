@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse
 from models.hotel import HotelModel
+import uuid
 
 
 hotels = []
@@ -14,11 +15,11 @@ class HotelResource(Resource):
         return hotel_parser.parse_args()
     
     def get_by_id(self, id):
-        return next((hotel for hotel in hotels if hotel["id"] == int(id)), None)
+        return next((hotel for hotel in hotels if hotel["id"] == id), None)
     
     def post(self):
         data = self.parse_args()
-        new_hotel = HotelModel(id=len(hotels) + 1, **data).to_dict()
+        new_hotel = HotelModel(self.new_id(), **data).to_dict()
         hotels.append(new_hotel)
         return new_hotel, 201
     
@@ -38,7 +39,7 @@ class HotelResource(Resource):
     
     def put(self, id):
         data = self.parse_args()
-        new_hotel = HotelModel(int(id), **data).to_dict()
+        new_hotel = HotelModel(id, **data).to_dict()
         
         hotel = self.get_by_id(id)
         if hotel:
@@ -46,6 +47,9 @@ class HotelResource(Resource):
             return new_hotel, 200
         
         return self.post(), 201
+    
+    def new_id(self):
+        return str(uuid.uuid4())
     
 
 class HotelList(Resource):
