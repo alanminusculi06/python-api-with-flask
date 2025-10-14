@@ -3,7 +3,7 @@ from flask_restful import Api
 from resources.hotel import Hotel, HotelList, CreateHotel
 from resources.usuario import User, CreateUser, UserLogin, UserLogout
 from flask_jwt_extended import JWTManager
-import BLACKLIST
+import BLOCKLIST
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sua_chave_secreta_aqui'  # Adicione esta linha
@@ -22,15 +22,12 @@ def create_tables():
 @jwt.token_in_blocklist_loader
 def check_if_token_in_blocklist(jwt_header, jwt_payload):
     jti = jwt_payload["jti"]
-    return jti in BLACKLIST.BLACKLIST
+    return jti in BLOCKLIST.BLOCKLIST
 
 # Callback function for when a revoked token is encountered
 @jwt.revoked_token_loader
 def revoked_token_callback(jwt_header, jwt_payload):
-    return (
-        jsonify({"description": "The token has been revoked.", "error": "token_revoked"}),
-        401,
-    )
+    return (jsonify({"message": "The token has been revoked."}), 401)
 
 api.add_resource(HotelList, '/hotels')
 api.add_resource(Hotel, '/hotels/<string:id>')

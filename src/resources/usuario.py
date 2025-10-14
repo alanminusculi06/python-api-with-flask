@@ -3,7 +3,7 @@ from models.usuario import UsuarioModel
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import jwt_required, get_jwt
 import uuid
-import BLACKLIST
+import BLOCKLIST
 
 
 class UserResource(Resource):
@@ -89,5 +89,5 @@ class UserLogout(Resource):
     @jwt_required()
     def post(self):
         jwt_id = get_jwt()['jti']
-        BLACKLIST.BLACKLIST.add(jwt_id)
+        BLOCKLIST.BLOCKLIST.add(jwt_id)
         return {"message": "User logged out successfully."}, 200
