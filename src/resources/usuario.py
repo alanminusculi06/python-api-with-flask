@@ -1,8 +1,9 @@
 from flask_restful import Resource, reqparse
 from models.usuario import UsuarioModel
 from flask_jwt_extended import create_access_token
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt
 import uuid
+import BLACKLIST
 
 
 class UserResource(Resource):
@@ -82,3 +83,11 @@ class UserLogin(Resource):
             token = create_access_token(identity=user.id)
             return {"access_token": token}, 200
         return {"message": "Invalid credentials."}, 401
+    
+class UserLogout(Resource):
+    
+    @jwt_required()
+    def post(self):
+        jwt_id = get_jwt()['jti']
+        BLACKLIST.BLACKLIST.add(jwt_id)
+        return {"message": "User logged out successfully."}, 200
